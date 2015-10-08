@@ -12,24 +12,24 @@
  * @author uidv7359
  */
 class TempControl {
-	
+
 	private $tempArray;
 	public $sensorsArray;
 	private $oMySQL;
 	private $Mail;
 	private $avgAKU;
 	//put your code here
-	
+
 	function __construct($tempJson,$oMySQL,$Mail){
 		$tempObj = json_decode($tempJson);
 		$this->tempArray = get_object_vars($tempObj);
 		$this->oMySQL = $oMySQL;
 		$this->Mail = $Mail;
 		$this->GetAllSensorsFomDb();
-		
+
 
 	}
-	
+
 	function InsertIntoTeplota(){
 		foreach ($tis->tempArray as $key => $temp) {
 			$temp=round($temp,1);
@@ -39,7 +39,7 @@ class TempControl {
 			}
 		}
 	}
-	
+
 	function InsertIntoTemp(){
 		$columns = "";
 		$values = "";
@@ -56,13 +56,13 @@ class TempControl {
 				$values.= ",".$temp;
 			}
 			$first = false;
-			
+
 		}
 		$this->avgAKU = round(($this->tempArray['2E40B4010000']+$this->tempArray['D94FB4010000']+$this->tempArray['FF6AB4010000'])/3,1);//average of aku
 		$sql="INSERT INTO temp ($columns,temp11,timestamp,day) VALUES ($values,$this->avgAKU,NOW(),DATE_FORMAT(NOW(), '%Y-%m-%d'));";
 		$this->oMySQL->ExecuteSQL($sql);
 	}
-	
+
 	/*Function to get all sensors ids*/
 	function GetAllSensorsFomDb(){
 		//first get sensor info from db
@@ -151,9 +151,6 @@ class TempControl {
 		$temp = $result['Temp'];
 		$sensorID = $result['sensorID'];
 		//turn on gpio if temperature is lower then required temp
-		//echo $tempArr[$row["name"]];
-		//echo "<br>";
-		//echo $row["Temp"];
 		if($this->tempArray[$sensorID] < $temp && $this->avgAKU > ($temp+3)){
 			return 1;
 		}
@@ -163,5 +160,9 @@ class TempControl {
 			return 0;
 		}
 	}
-	
+
+	public function GettimeTemp()
+	{
+		
+	}
 }
